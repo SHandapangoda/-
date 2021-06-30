@@ -1,10 +1,10 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 
-const netWidth = 4;
+const netWidth = 8;
 const netHeight = canvas.height;
 
-const paddleHeight = 100;
+const paddleHeight = 200;
 const paddleWidth = 10;
 
 let upArrowPressed = false;
@@ -27,6 +27,7 @@ const user = {
     score: 0
 };
 
+// opposit player attributes
 const oppenent = {
     x: canvas.width - (paddleWidth + 10),
     y: canvas.height / 2 - paddleHeight / 2,
@@ -36,21 +37,25 @@ const oppenent = {
     score: 0
 };
 
+// ball attributes
 const ball = {
     x: canvas.width / 2,
     y:canvas.height / 2,
-    radius: 7,
+    radius: 14,
     speed: 7,
-    velocity_X: 5,
-    velocity_Y: 5,
+    velocity_X: 10,
+    velocity_Y: 10,
     color: '#05EDFF'
 };
 
+// creating the net 
 function createNet(){
     context.fillStyle = net.color;
     context.fillRect (net.x, net.y, net.width, net.height);
 }
 
+
+//setting score
 function Score(x, y, score){
     context.fillStyle = '#fff';
     context.font = '35px sans-serif';
@@ -58,11 +63,13 @@ function Score(x, y, score){
     context.fillText(score, x, y);
 }
 
+// create the relevant racket
 function paddleCreate(x, y, width, height, color){
     context.fillStyle = color;
     context.fillRect(x, y, width, height);
 }
 
+// create ball
 function createBall(x, y, radius, color){
     context.fillStyle = color;
     context.beginPath();
@@ -73,6 +80,11 @@ function createBall(x, y, radius, color){
 
 }
 
+//for mouse clicks 
+
+
+
+// user to handle keys
 window.addEventListener('keydown',keyDown);
 window.addEventListener('keyup',keyUp);
 
@@ -100,16 +112,20 @@ function keyUp(event){
     }
 }
 
+// use as an intermediate function to create the game and call their attributes
 function render(){
     context.fillStyle = "#000";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    createNet();
-    Score(canvas.width / 4, canvas.height / 6, user.score);
-    Score(3 * canvas.width / 4, canvas.height / 6, oppenent.score);
-    paddleCreate(user.x, user.y, user.width, user.height, user.color);
-    paddleCreate(oppenent.x, oppenent.y, oppenent.width, oppenent.height, oppenent.color);
-    createBall(ball.x, ball.y, ball.radius, ball.color);
+
+    // call the functions.
+
+    createNet(); // create of net  which is in the middle. 
+    Score(canvas.width / 4, canvas.height / 6, user.score); // setting user score 
+    Score(3 * canvas.width / 4, canvas.height / 6, oppenent.score); // setting oppenent score
+    paddleCreate(user.x, user.y, user.width, user.height, user.color); // create the bat of user
+    paddleCreate(oppenent.x, oppenent.y, oppenent.width, oppenent.height, oppenent.color); // create the bat of opponent
+    createBall(ball.x, ball.y, ball.radius, ball.color); // attributes of ball call 
 
 }
 
@@ -128,19 +144,37 @@ function update(){
         ball.velocity_Y = -ball.velocity_Y;
 
     }
-
+    // scoring of the players
+    
     if(ball.x + ball.radius >= canvas.width){
-
+    
         user.score += 1;
+        
         restart(); 
     }
-
+       
     if (ball.x - ball.radius <= 0){
-
+    
         oppenent.score += 1;
-        restart(); 
+        
+        restart();
     }
 
+    if(user.score == 3){
+        
+        alert('win')
+        user.score == 0 && oppenent.score == 0
+        
+    }
+
+    if(oppenent.score == 3){
+       
+        alert('lost')
+        user.score == 0 && oppenent.score == 0
+    }
+   
+    
+    
     // motion of ball
     ball.x += ball.velocity_X;
     ball.y += ball.velocity_Y;
@@ -169,12 +203,14 @@ function update(){
 }
 
 function restart(){
+   
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
     ball.speed = 7;
 
     ball.velocity_Y = -ball.velocity_Y;
     ball.velocity_X = -ball.velocity_X;
+
 }
 
 function collisionDet(player, ball){
@@ -200,5 +236,5 @@ function loop(){
     render();
 }
 
-setInterval(loop, 1000 / 60);
+setInterval(loop, 500 / 60);
 
