@@ -1,15 +1,26 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 
+// middle net
 const netWidth = 8;
 const netHeight = canvas.height;
 
+// bat size
 const paddleHeight = 200;
 const paddleWidth = 10;
 
+// functioning of keys
 let upArrowPressed = false;
 let downArrowPressed = false;
 
+// declaring file path for relaevant sound files
+const hitSound = new Audio('./Sounds/hitSound.wav')
+const scoreSound = new Audio('./Sounds/scoreSound.wav')
+const wallHitSound = new Audio('./Sounds/wallHitSound.wav')
+
+// attributes of elements
+
+// attributes of the relevant net
 const net = {
     x: canvas.width / 2 - netWidth / 2,
     y: 0,
@@ -18,6 +29,7 @@ const net = {
     color: '#FFF'
 };
 
+// user attributes
 const user = {
     x: 10,
     y: canvas.height / 2 - paddleHeight / 2,
@@ -141,40 +153,35 @@ function update(){
     // check of ball hit bottom
     if (ball.y + ball.radius >= canvas.height || ball.y - ball.radius <= 0){
         
+        // when hit the adjacent walls
+        wallHitSound.play();
         ball.velocity_Y = -ball.velocity_Y;
 
     }
     // scoring of the players
-    
-    if(ball.x + ball.radius >= canvas.width){
-    
-        user.score += 1;
-        
-        restart(); 
-    }
-       
-    if (ball.x - ball.radius <= 0){
-    
+  
+        if(ball.x + ball.radius >= canvas.width){
+            scoreSound.play();
+            user.score += 1;
+            restart(); 
+        }
+           
+        if (ball.x - ball.radius <= 0){
+        scoreSound.play();
         oppenent.score += 1;
-        
         restart();
-    }
-
-    if(user.score == 3){
-        
-        alert('win')
-        user.score == 0 && oppenent.score == 0
-        
-    }
-
-    if(oppenent.score == 3){
        
-        alert('lost')
-        user.score == 0 && oppenent.score == 0
-    }
+        }
+    
+
+        if (user.score == 5){
+        alert('You win')
+         }
+
+        if (oppenent.score == 5){
+        alert('Lose')
+        }
    
-    
-    
     // motion of ball
     ball.x += ball.velocity_X;
     ball.y += ball.velocity_Y;
@@ -185,23 +192,29 @@ function update(){
     let player = (ball.x < canvas.width / 2) ? user: oppenent
 
     if (collisionDet(player, ball)){
+
+        // play hitsound audio when hits bat
+        hitSound.play();
+
         let theta = 0;
 
         if (ball.y < (player.y + player.height / 2)){
-            theta = -1 * Math.PI / 4;
-        }
+            theta = -1 * Math.PI /6 
+       }
 
         else if(ball.y > (player.y + player.height / 2)){
-            theta = Math.PI / 4;
+            theta = Math.PI / 6;
         }
 
         ball.velocity_X = (player === user ? 1 : -1) * ball.speed * Math.cos(theta);
         ball.velocity_Y =  ball.speed * Math.sin(theta);
 
-        ball.speed += 0.2;
+        ball.speed += 0.6;
     }
 }
 
+
+// once player scores it restarts from ball launching from center.
 function restart(){
    
     ball.x = canvas.width / 2;
@@ -213,6 +226,7 @@ function restart(){
 
 }
 
+// clarify whether it hits the bat
 function collisionDet(player, ball){
     player.top = player.y;
     player.right = player.x + player.width;
@@ -229,12 +243,13 @@ function collisionDet(player, ball){
 }
 
 
-
+// helps to continue the game 
 function loop(){
     update();
 
     render();
 }
 
+//refeshing rate
 setInterval(loop, 500 / 60);
 
